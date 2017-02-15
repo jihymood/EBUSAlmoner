@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item android:drawable="@drawable/shape_shift_top_menu_bg2" android:state_checked="true"></item>
-    <item android:drawable="@drawable/shape_shift_top_menu_bg3" android:state_checked="false"></item>
-
-</selector>
