@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content" android:layout_height="match_parent">
+    <item android:drawable="@mipmap/my_common_dialog_btn_sure_press" android:state_pressed="true"/>
+    <item android:drawable="@mipmap/my_common_dialog_btn_sure_normal"/>
+</selector>

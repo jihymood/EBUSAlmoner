@@ -1,0 +1,191 @@
+package com.xpro.ebusalmoner.baseapi;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.Fragment;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.xpro.ebusalmoner.R;
+import com.xpro.ebusalmoner.widget.CustomDialog1;
+
+import org.xutils.x;
+
+
+/**
+ * @ClassName: BaseFragment
+ * @Description: Fragment基类
+ * @author: houyang
+ * @date: 2016年9月21日 上午9:25:00
+ */
+public class BaseFragment extends Fragment {
+    private boolean injected = false;
+    Context context;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        injected = true;
+        return x.view().inject(this, inflater, container);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (!injected) {
+            x.view().inject(this, this.getView());
+        }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    /**
+     * @param msg
+     * @Title: showTip
+     * @Description: 确定方法，无点击返回
+     * @return: void
+     */
+    public void showTip(String msg) {
+        final Dialog customDialog = new CustomDialog1(getActivity(),
+                R.style.CustomDialogTheme, R.layout.dialog_custom);
+        customDialog.show();
+        TextView content = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_content);
+        TextView divider = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_divider);
+        TextView confirm = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_confirm);
+        TextView cancel = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_cancel);
+        content.setText(msg);
+        divider.setVisibility(View.GONE);
+        cancel.setVisibility(View.GONE);
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customDialog.dismiss();
+            }
+        });
+    }
+
+    /**
+     * @param msg
+     * @param callBack
+     * @Title: showTip
+     * @Description: 确定方法，有点击返回
+     * @return: void
+     */
+    public void showTip(String msg, final OnCustomDialogConfirmListener callBack) {
+        final Dialog customDialog = new CustomDialog1(getActivity(),
+                R.style.CustomDialogTheme, R.layout.dialog_custom);
+        customDialog.setCancelable(false);
+        customDialog.show();
+        TextView content = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_content);
+        TextView divider = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_divider);
+        TextView confirm = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_confirm);
+        TextView cancel = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_cancel);
+        content.setText(msg);
+        divider.setVisibility(View.GONE);
+        cancel.setVisibility(View.GONE);
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customDialog.dismiss();
+                callBack.onClick();
+            }
+        });
+    }
+
+    /**
+     * @param msg
+     * @param callBack
+     * @Title: showConfirmTip
+     * @Description: 取消确定方法，确定有点击返回
+     * @return: void
+     */
+    public void showConfirmTip(String msg,
+                               final OnCustomDialogConfirmListener callBack) {
+        final Dialog customDialog = new CustomDialog1(getActivity(),
+                R.style.CustomDialogTheme, R.layout.dialog_custom);
+        customDialog.show();
+        TextView content = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_content);
+        TextView confirm = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_confirm);
+        TextView cancel = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_cancel);
+        content.setText(msg);
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customDialog.dismiss();
+                callBack.onClick();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customDialog.dismiss();
+            }
+        });
+    }
+
+    /**
+     * @param msg
+     * @param confirm
+     * @param cancel
+     * @Title: showConfirmTip
+     * @Description: 取消确定方法，均有点击返回
+     * @return: void
+     */
+    public void showConfirmTip(String msg,
+                               final OnCustomDialogConfirmListener confirm,
+                               final OnCustomDialogConfirmListener cancel) {
+        final Dialog customDialog = new CustomDialog1(getActivity(),
+                R.style.CustomDialogTheme, R.layout.dialog_custom);
+        customDialog.show();
+        TextView content = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_content);
+        TextView confirmBtn = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_confirm);
+        TextView cancelBtn = (TextView) customDialog
+                .findViewById(R.id.custom_dialog_cancel);
+        content.setText(msg);
+
+        confirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customDialog.dismiss();
+                confirm.onClick();
+            }
+        });
+
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customDialog.dismiss();
+                cancel.onClick();
+            }
+        });
+    }
+
+    public interface OnCustomDialogConfirmListener {
+        void onClick();
+    }
+
+
+}

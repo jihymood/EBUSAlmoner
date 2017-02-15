@@ -1,0 +1,16 @@
+package com.xpro.ebusalmoner.constants;
+
+/**
+ * @ClassName: HttpUrls
+ * @Description: url类
+ * @author: houyang
+ * @date: 2016年9月23日 上午10:44:54
+ */
+public class HttpUrls {
+
+    // 按小时更新动态获取天气
+    public static final String weather = "http://apis.baidu.com/heweather/weather/free";
+
+    public static final String url = "http://192.168.8.108:8080/EBUS/app?";
+
+}

@@ -1,0 +1,15 @@
+package com.xpro.ebusalmoner.test;
+
+import java.util.List;
+
+public class TrailerTaskBody_S {
+	private List<TrailerTaskData_S> data;
+
+	public void setData(List<TrailerTaskData_S> data) {
+		this.data = data;
+	}
+
+	public List<TrailerTaskData_S> getData() {
+		return this.data;
+	}
+}

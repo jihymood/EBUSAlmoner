@@ -1,0 +1,532 @@
+package com.xpro.ebusalmoner.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BaiduMap.OnMarkerClickListener;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.InfoWindow;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.MyLocationConfiguration;
+import com.baidu.mapapi.map.MyLocationConfiguration.LocationMode;
+import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.xpro.ebusalmoner.R;
+import com.xpro.ebusalmoner.baseapi.BaseActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 暂无
+ *
+ * @author huangjh
+ */
+// @ContentView(R.layout.activity_breakdown_info1)
+public class BreakdownInfoActivity extends BaseActivity implements
+        OnClickListener {
+
+    private TextView locationText;
+    private MapView mMapView = null;// 百度地图控件,专门显示地图用的控件
+    private BaiduMap mBaiduMap;// 百度地图对象,抽象的地图对象
+    private LocationMode currentMode;// 定位模式
+    private LocationClient locClient;// 定位客户端
+    private Marker marker1;// 定位图标
+    private double latitude, longitude; // 经纬度
+    private boolean isFirstLoc = true;// 记录是否第一次定位
+    private BitmapDescriptor bitmap;
+    private InfoWindow mInfoWindow;
+    private Button back, set;
+    private ImageView driverTel;
+    private Button button;
+    private ArrayAdapter<String> adapter;
+    private String[] trailers;// 建立数据源
+    private List<String> list;
+    private LatLng cenpt1;
+    private LatLng cenpt2;
+    private LatLng cenpt3;
+
+    private List<List<LatLng>> tuoche;
+    private List<LatLng> latlngs1;// 拖车1经纬度集合
+    private List<LatLng> latlngs2;// 拖车2经纬度集合
+    // 通过设置间隔时间和距离可以控制速度和图标移动的距离
+    private static final int TIME_INTERVAL = 80;
+    private static final double DISTANCE = 0.00009;
+    private Handler mHandler;
+
+    // 定位监听器
+    // BDLocationListener locListener;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        SDKInitializer.initialize(getApplicationContext());
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_breakdown_info);
+
+        mHandler = new Handler(Looper.getMainLooper());
+        getList();// 拖车数据源
+        initData();// 经纬度数据源
+
+        initView();
+        init();
+
+        // for(int i=0;i<tuoche.size();i++){
+        // drawPolyLine(tuoche.get(i));
+        // }
+    }
+
+    /**
+     * 动态获取数据源
+     *
+     * @return
+     */
+    public List<String> getList() {
+        list = new ArrayList<String>();
+        list.add("请选择拖车");
+        list.add("1号拖车");
+        list.add("1号拖车");
+        list.add("1号拖车");
+        list.add("1号拖车");
+        return list;
+    }
+
+    public void initView() {
+        mMapView = (MapView) findViewById(R.id.mapView);
+        locationText = (TextView) findViewById(R.id.location);
+        back = (Button) findViewById(R.id.back);
+        button = (Button) findViewById(R.id.button);
+        driverTel = (ImageView) findViewById(R.id.driverTel);
+        set = (Button) findViewById(R.id.set);
+        set.setVisibility(View.VISIBLE);
+        back.setOnClickListener(this);
+        set.setOnClickListener(this);
+        driverTel.setOnClickListener(this);
+        bitmap = BitmapDescriptorFactory.fromResource(R.mipmap.icon_marka);
+        setTitle("故\t\t\t障");
+
+        trailers = getResources().getStringArray(R.array.select_trailer);
+        adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, trailers);
+        // adapter=new ArrayAdapter<String>(this,
+        // android.R.layout.simple_spinner_item, list);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+    }
+
+    private void init() {
+        MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(15.0f);
+        mBaiduMap = mMapView.getMap();
+        // 普通地图
+        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+
+        mBaiduMap.setMapStatus(msu);
+        currentMode = LocationMode.NORMAL;
+        // 开启定位图层
+        mBaiduMap.setMyLocationEnabled(true);
+        // 定位服务的客户端
+        locClient = new LocationClient(this);
+        // 注册监听函数
+        locClient.registerLocationListener(locListener);
+        // 配置LocationClient这个定位客户端
+        LocationClientOption option = new LocationClientOption();
+        option.setOpenGps(true);// 打开gps
+        option.setCoorType("bd09ll");// 设置坐标类型
+        option.setAddrType("all");
+        option.setScanSpan(1000);//
+        // 配置客户端
+        locClient.setLocOption(option);
+        // 启动定位
+        locClient.start();
+
+        mBaiduMap.setMyLocationConfigeration(new MyLocationConfiguration(
+                currentMode, true, null));
+        mBaiduMap.setOnMarkerClickListener(new OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                // 创建标注对象(就是地图上的那些图标等等)
+
+                final Button button = new Button(BreakdownInfoActivity.this);
+                button.setBackgroundResource(R.mipmap.ic_launcher);
+                button.setText("JN-0039");
+                // 获得当前这个点的位置
+                LatLng ll = marker.getPosition();
+                // 显示这个button
+                mInfoWindow = new InfoWindow(button, ll, 160);
+                mBaiduMap.showInfoWindow(mInfoWindow);
+                return true;
+            }
+        });
+
+    }
+
+    BDLocationListener locListener = new BDLocationListener() {
+        @Override
+        public void onReceiveLocation(BDLocation location) {
+            if (location == null || mMapView == null)
+                return;
+            // 构造定位数据
+            MyLocationData locData = new MyLocationData.Builder()
+                    .accuracy(location.getRadius())//
+                    .direction(100)// 方向
+                    .latitude(location.getLatitude())//
+                    .longitude(location.getLongitude())//
+                    .build();
+            // 设置定位数据
+
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            mBaiduMap.setMyLocationData(locData);
+            // 第一次定位的时候，那地图中心店显示为定位到的位置
+            LatLng cenpt = new LatLng(latitude, longitude);
+            Log.e("MainActivity", latitude + "/" + longitude);
+            OverlayOptions options = new MarkerOptions().position(cenpt).icon(
+                    bitmap);
+            mBaiduMap.addOverlay(options);
+
+            if (isFirstLoc) {
+                isFirstLoc = false;
+                LatLng ll = new LatLng(location.getLatitude(),
+                        location.getLongitude());
+                // MapStatusUpdate描述地图将要发生的变化
+                // MapStatusUpdateFactory生成地图将要反生的变化
+                MapStatusUpdate msu = MapStatusUpdateFactory.newLatLng(ll);
+                mBaiduMap.animateMapStatus(msu);
+                locationText.setText(location.getAddrStr());
+                Log.e("故障车经纬度--", latitude + "/" + longitude);
+                Toast.makeText(getApplicationContext(), location.getAddrStr(),
+                        Toast.LENGTH_SHORT).show();
+
+                cenpt1 = new LatLng(31.97506596f, 118.75827533f);
+                reverseGeoCode(cenpt1);
+                // cenpt2 = new LatLng(31.96566596f, 118.75627533f);
+                // reverseGeoCode(cenpt2);
+                // cenpt3 = new LatLng(31.96366596f, 118.75327533f);
+                // reverseGeoCode(cenpt3);
+            }
+        }
+
+    };
+
+    /**
+     * 根据经纬度获得车辆位置信息
+     *
+     * @param lng
+     * @param lat
+     */
+    public void initOverlay(String lng, String lat) {
+        LatLng point = new LatLng(Double.parseDouble(lat),
+                Double.parseDouble(lng));
+        OverlayOptions option = new MarkerOptions().position(point)
+                .icon(bitmap).zIndex(5);
+        mBaiduMap.addOverlay(option);
+    }
+
+    /**
+     * 反地理编码得到地址信息
+     */
+    private void reverseGeoCode(LatLng latLng) {
+        // 创建地理编码检索实例
+        GeoCoder geoCoder = GeoCoder.newInstance();
+        //
+        OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {
+            // 反地理编码查询结果回调函数
+            @Override
+            public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
+                if (result == null
+                        || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                    // 没有检测到结果
+                    Toast.makeText(BreakdownInfoActivity.this, "抱歉，未能找到结果",
+                            Toast.LENGTH_LONG).show();
+                }
+                Toast.makeText(BreakdownInfoActivity.this,
+                        "位置：" + result.getAddress(), Toast.LENGTH_LONG).show();
+            }
+
+            // 地理编码查询结果回调函数
+            @Override
+            public void onGetGeoCodeResult(GeoCodeResult result) {
+                if (result == null
+                        || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                    // 没有检测到结果
+                }
+            }
+        };
+        OverlayOptions optionss = new MarkerOptions().position(latLng).icon(
+                bitmap);
+        mBaiduMap.addOverlay(optionss);
+        // 设置地理编码检索监听者
+        geoCoder.setOnGetGeoCodeResultListener(listener);
+        geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(latLng));
+        // 释放地理编码检索实例
+        geoCoder.destroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mMapView.onDestroy();
+        mMapView = null;
+        super.onDestroy();
+    }
+
+    // @Override
+    // public boolean onKeyDown(int keyCode, KeyEvent event) {
+    // String str = (String) spinner.getSelectedItem(); //拿到被选择项的值
+    // if (keyCode == KeyEvent.KEYCODE_BACK) {
+    // if (!("请选择拖车".equals(str))) {
+    // finish();
+    // }
+    // Toast.makeText(this, "请选择拖车",Toast.LENGTH_LONG).show();
+    // }
+    // return false;
+    // }
+
+    @Override
+    public void onClick(View v) {
+        // TODO Auto-generated method stub
+        switch (v.getId()) {
+            case R.id.back:
+                finish();
+                break;
+            case R.id.button:
+
+                break;
+            case R.id.driverTel:
+                String tel = "12839405849";
+                Intent intent = new Intent(Intent.ACTION_CALL);
+                intent.putExtra("tel", tel);
+
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    // 拖车经纬度集合
+    public void initData() {
+
+        tuoche = new ArrayList<List<LatLng>>();
+        latlngs1 = new ArrayList<LatLng>(); // 第一辆车经纬度集合
+        latlngs2 = new ArrayList<LatLng>();// 第二辆车经纬度集合
+
+        latlngs1.add(new LatLng(31.9697048489, 118.7748744881));
+        latlngs1.add(new LatLng(31.9702354581, 118.7747304881));
+        latlngs1.add(new LatLng(31.9874731546, 118.7744525592));
+        latlngs1.add(new LatLng(31.9961700713, 118.7757586264));
+        latlngs1.add(new LatLng(32.0048694174, 118.7774854183));
+        latlngs1.add(new LatLng(32.0037307114, 118.7824144492));
+        latlngs1.add(new LatLng(31.9962609086, 118.7872986406));
+        latlngs1.add(new LatLng(31.9944540133, 118.7914938260));
+        latlngs1.add(new LatLng(31.9906570133, 118.7968118260));
+
+        latlngs2.add(new LatLng(31.9733642960, 118.7662912632));
+        latlngs2.add(new LatLng(31.9735350000, 118.7557740000));
+        latlngs2.add(new LatLng(31.9714564110, 118.7504893514));
+        latlngs2.add(new LatLng(31.9755604110, 118.7513513514));
+        latlngs2.add(new LatLng(31.9767854110, 118.7518543514));
+        latlngs2.add(new LatLng(31.9776434110, 118.7491953514));
+        latlngs2.add(new LatLng(31.9812311339, 118.7433553933));
+
+        tuoche.add(latlngs1);
+        tuoche.add(latlngs2);
+    }
+
+    /**
+     * 根据两点算取图标转的角度
+     */
+    private double getAngle(LatLng fromPoint, LatLng toPoint) {
+        double slope = getSlope(fromPoint, toPoint);
+        if (slope == Double.MAX_VALUE) {
+            if (toPoint.latitude > fromPoint.latitude) {
+                return 0;
+            } else {
+                return 180;
+            }
+        }
+        float deltAngle = 0;
+        if ((toPoint.latitude - fromPoint.latitude) * slope < 0) {
+            deltAngle = 180;
+        }
+        double radio = Math.atan(slope);
+        double angle = 180 * (radio / Math.PI) + deltAngle - 90;
+        return angle;
+    }
+
+    /**
+     * 根据点和斜率算取截距
+     */
+    private double getInterception(double slope, LatLng point) {
+
+        double interception = point.latitude - slope * point.longitude;
+        return interception;
+    }
+
+    /**
+     * 算斜率
+     */
+    private double getSlope(LatLng fromPoint, LatLng toPoint) {
+        if (toPoint.longitude == fromPoint.longitude) {
+            return Double.MAX_VALUE;
+        }
+        double slope = ((toPoint.latitude - fromPoint.latitude) / (toPoint.longitude - fromPoint.longitude));
+        return slope;
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // mMapView.onSaveInstanceState(outState);
+    }
+
+    /**
+     * 计算x方向每次移动的距离
+     */
+    private double getXMoveDistance(double slope) {
+        if (slope == Double.MAX_VALUE) {
+            return DISTANCE;
+        }
+        return Math.abs((DISTANCE * slope) / Math.sqrt(1 + slope * slope));
+    }
+
+    private void drawPolyLine(List<LatLng> polylines) {
+
+        // polylines.add(polylines.get(0));//将轨迹连成一个完整的环形
+
+        // PolylineOptions polylineOptions = new
+        // PolylineOptions().points(polylines).width(10).color(Color.RED);
+        // mPolyline = (Polyline) mBaiduMap.addOverlay(polylineOptions);
+        OverlayOptions markerOptions;
+        // markerOptions = new MarkerOptions().flat(true).anchor(0.5f, 0.5f)
+        // .icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow)).position(polylines.get(0))
+        // .rotate((float) getAngle(0));
+
+        markerOptions = new MarkerOptions().flat(true).anchor(0.5f, 0.5f)
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.arrow))
+                .position(polylines.get(0));
+
+        // OverlayOptions options = new PolylineOptions().color(0xAAFF0000)
+        // .width(10).points(polylines);
+        // mBaiduMap.addOverlay(options);
+
+        // mMoveMarker局部变量，一辆小车一个移动箭头
+        Marker mMoveMarker = (Marker) mBaiduMap.addOverlay(markerOptions);
+
+        moveLooper(polylines, mMoveMarker);
+        // moveLooper(polylines,mMoveMarker,options);
+    }
+
+    /**
+     * 循环进行移动逻辑
+     */
+    // public void moveLooper(final List<LatLng> polylines,final Marker
+    // mMoveMarker,
+    // final OverlayOptions options) {
+    public void moveLooper(final List<LatLng> polylines,
+                           final Marker mMoveMarker) {
+        new Thread() {
+            public void run() {
+                while (true) {
+                    for (int i = 0; i < polylines.size() - 1; i++) {
+                        final LatLng startPoint = polylines.get(i);
+                        final LatLng endPoint = polylines.get(i + 1);
+                        Log.e("--", startPoint.latitude + "/"
+                                + startPoint.longitude);
+                        mMoveMarker.setPosition(startPoint);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                // refresh marker's rotate
+                                if (mMapView == null) {
+                                    return;
+                                }
+                                mMoveMarker.setRotate((float) getAngle(
+                                        startPoint, endPoint));
+                                // mBaiduMap.addOverlay(options);
+                            }
+                        });
+                        double slope = getSlope(startPoint, endPoint);
+                        // 是不是正向的标示
+                        boolean isReverse = (startPoint.latitude > endPoint.latitude);
+
+                        double intercept = getInterception(slope, startPoint);
+
+                        double xMoveDistance = isReverse ? getXMoveDistance(slope)
+                                : -1 * getXMoveDistance(slope);
+
+                        for (double j = startPoint.latitude; !((j > endPoint.latitude) ^ isReverse); j = j
+                                - xMoveDistance) {
+                            LatLng latLng = null;
+                            if (slope == Double.MAX_VALUE) {
+                                latLng = new LatLng(j, startPoint.longitude);
+                            } else {
+                                latLng = new LatLng(j, (j - intercept) / slope);
+                            }
+
+                            final LatLng finalLatLng = latLng;
+                            mHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (mMapView == null) {
+                                        return;
+                                    }
+                                    mMoveMarker.setPosition(finalLatLng);// 走完一圈回到起点
+                                    // mBaiduMap.addOverlay(options);
+                                }
+                            });
+                            try {
+                                Thread.sleep(TIME_INTERVAL);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }
+                }
+            }
+
+        }.start();
+    }
+}

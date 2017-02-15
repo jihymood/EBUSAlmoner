@@ -1,0 +1,173 @@
+package com.xpro.ebusalmoner.test;
+
+public class TrailerTaskData_S {
+	private String id;
+
+	private String hitchLatitude;
+
+	private String hitchLongitude;
+
+	private String hitchTime;
+
+	private String line;
+
+	private String plateNumber;
+
+	private String number;
+
+	private String driverName;
+
+	private String driverTel;
+
+	private String trailerId;
+
+	private String trailerNumber;
+
+	private String trailerLatitude;
+
+	private String trailerLongitude;
+
+	private String images_driver;
+
+	private String cause;
+
+	private String images_trailer;
+
+	private String state;
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getId() {
+		return this.id;
+	}
+
+	public void setHitchLatitude(String hitchLatitude) {
+		this.hitchLatitude = hitchLatitude;
+	}
+
+	public String getHitchLatitude() {
+		return this.hitchLatitude;
+	}
+
+	public void setHitchLongitude(String hitchLongitude) {
+		this.hitchLongitude = hitchLongitude;
+	}
+
+	public String getHitchLongitude() {
+		return this.hitchLongitude;
+	}
+
+	public void setHitchTime(String hitchTime) {
+		this.hitchTime = hitchTime;
+	}
+
+	public String getHitchTime() {
+		return this.hitchTime;
+	}
+
+	public void setLine(String line) {
+		this.line = line;
+	}
+
+	public String getLine() {
+		return this.line;
+	}
+
+	public void setPlateNumber(String plateNumber) {
+		this.plateNumber = plateNumber;
+	}
+
+	public String getPlateNumber() {
+		return this.plateNumber;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
+	}
+
+	public String getNumber() {
+		return this.number;
+	}
+
+	public void setDriverName(String driverName) {
+		this.driverName = driverName;
+	}
+
+	public String getDriverName() {
+		return this.driverName;
+	}
+
+	public void setDriverTel(String driverTel) {
+		this.driverTel = driverTel;
+	}
+
+	public String getDriverTel() {
+		return this.driverTel;
+	}
+
+	public void setTrailerId(String trailerId) {
+		this.trailerId = trailerId;
+	}
+
+	public String getTrailerId() {
+		return this.trailerId;
+	}
+
+	public void setTrailerNumber(String trailerNumber) {
+		this.trailerNumber = trailerNumber;
+	}
+
+	public String getTrailerNumber() {
+		return this.trailerNumber;
+	}
+
+	public void setTrailerLatitude(String trailerLatitude) {
+		this.trailerLatitude = trailerLatitude;
+	}
+
+	public String getTrailerLatitude() {
+		return this.trailerLatitude;
+	}
+
+	public void setTrailerLongitude(String trailerLongitude) {
+		this.trailerLongitude = trailerLongitude;
+	}
+
+	public String getTrailerLongitude() {
+		return this.trailerLongitude;
+	}
+
+	public void setImages_driver(String images_driver) {
+		this.images_driver = images_driver;
+	}
+
+	public String getImages_driver() {
+		return this.images_driver;
+	}
+
+	public void setCause(String cause) {
+		this.cause = cause;
+	}
+
+	public String getCause() {
+		return this.cause;
+	}
+
+	public void setImages_trailer(String images_trailer) {
+		this.images_trailer = images_trailer;
+	}
+
+	public String getImages_trailer() {
+		return this.images_trailer;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getState() {
+		return this.state;
+	}
+}

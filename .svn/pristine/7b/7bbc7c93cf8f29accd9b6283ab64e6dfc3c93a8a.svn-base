@@ -1,0 +1,73 @@
+package com.xpro.ebusalmoner.test;
+
+public class BreakdownInfoData_M {
+	private String trailerId;
+
+	private String trailerNumber;
+
+	private String trailerLatitude;
+
+	private String trailerLongitude;
+
+	private String driverName;
+
+	private String driverTel;
+
+	private String trailerState;
+
+	public void setTrailerId(String trailerId) {
+		this.trailerId = trailerId;
+	}
+
+	public String getTrailerId() {
+		return this.trailerId;
+	}
+
+	public void setTrailerNumber(String trailerNumber) {
+		this.trailerNumber = trailerNumber;
+	}
+
+	public String getTrailerNumber() {
+		return this.trailerNumber;
+	}
+
+	public void setTrailerLatitude(String trailerLatitude) {
+		this.trailerLatitude = trailerLatitude;
+	}
+
+	public String getTrailerLatitude() {
+		return this.trailerLatitude;
+	}
+
+	public void setTrailerLongitude(String trailerLongitude) {
+		this.trailerLongitude = trailerLongitude;
+	}
+
+	public String getTrailerLongitude() {
+		return this.trailerLongitude;
+	}
+
+	public void setDriverName(String driverName) {
+		this.driverName = driverName;
+	}
+
+	public String getDriverName() {
+		return this.driverName;
+	}
+
+	public void setDriverTel(String driverTel) {
+		this.driverTel = driverTel;
+	}
+
+	public String getDriverTel() {
+		return this.driverTel;
+	}
+
+	public void setTrailerState(String trailerState) {
+		this.trailerState = trailerState;
+	}
+
+	public String getTrailerState() {
+		return this.trailerState;
+	}
+}

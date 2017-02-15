@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <!-- 机构管理 -->
+
+    <include layout="@layout/include_head" />
+
+    <!-- <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="0.7"
+        android:paddingLeft="15dp" >
+
+        <EditText
+            android:id="@+id/searchEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/search"
+            android:focusable="false"
+            android:hint="搜索机构" />
+
+        <ImageView
+            android:id="@+id/cancle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/ic_launcher"
+            android:visibility="invisible" />
+    </FrameLayout> -->
+    <FrameLayout
+        android:id="@+id/layoutContainer"
+        android:layout_width="match_parent"
+        android:layout_weight="0.7"
+        android:layout_height="0dp"
+        android:padding="8dp" >
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@mipmap/text_field"
+            android:drawableLeft="@mipmap/search"
+            android:drawablePadding="8dp"
+            android:hint="搜索"
+            android:paddingLeft="8dp"
+            android:paddingRight="40dp"
+            android:singleLine="true"
+            android:focusable="false"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/ivClearText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:padding="4dp"
+            android:src="@mipmap/clear_button"
+            android:visibility="invisible" />
+    </FrameLayout>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:scrollbars="none"
+        android:paddingLeft="15dp" >
+    </ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
+        android:orientation="horizontal"
+        android:paddingLeft="60dp"
+        android:paddingRight="60dp" >
+
+        <RadioButton
+            android:id="@+id/addButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawablePadding="5dp"
+            android:drawableTop="@mipmap/title_jia_select"
+            android:gravity="center"
+            android:text="新建人员"
+            android:textSize="13sp" />
+
+        <RadioButton
+            android:id="@+id/searchButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawablePadding="5dp"
+            android:drawableTop="@mipmap/title_jia_select"
+            android:gravity="center"
+            android:text="搜索"
+            android:textSize="13sp" />
+
+        <RadioButton
+            android:id="@+id/setButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawablePadding="5dp"
+            android:drawableTop="@mipmap/title_jia_select"
+            android:gravity="center"
+            android:text="菜单"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+</LinearLayout>

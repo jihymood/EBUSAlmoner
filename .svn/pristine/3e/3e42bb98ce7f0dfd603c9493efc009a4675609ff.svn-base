@@ -1,0 +1,17 @@
+package businspection.xpro.com.ebusdriver.sections.task.parse;
+
+
+import com.alibaba.fastjson.JSON;
+
+import businspection.xpro.com.ebusdriver.sections.task.entity.MainEntity;
+
+/**
+ * Created by houyang on 2016/12/20.
+ * 二维码解析
+ */
+public class CodeAndCarParse {
+    public static MainEntity mainParse(String json) {
+        MainEntity mainEntity = JSON.parseObject(json, MainEntity.class);
+        return mainEntity;
+    }
+}

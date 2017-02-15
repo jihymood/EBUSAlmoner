@@ -1,0 +1,292 @@
+package com.xpro.ebusalmoner.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import com.xpro.ebusalmoner.R;
+import com.xpro.ebusalmoner.baseapi.BaseActivity;
+import com.xpro.ebusalmoner.widget.CustomDialog;
+
+import org.xutils.view.annotation.ContentView;
+import org.xutils.view.annotation.ViewInject;
+
+import java.io.File;
+import java.io.IOException;
+
+/**
+ * 救济-->管理人员-->故障详情
+ *
+ * @author huangjh
+ */
+@ContentView(R.layout.adapter_routinemaintenance_s)
+public class BreakdownActivity_S extends BaseActivity implements OnClickListener, OnCheckedChangeListener {
+    @ViewInject(R.id.save)
+    private Button save;
+    @ViewInject(R.id.back)
+    private ImageView back;
+    @ViewInject(R.id.driverTel)
+    private ImageView driverTel;
+    @ViewInject(R.id.takephoto)
+    private ImageView takephoto;
+    //	@ViewInject(R.id.imageView)
+//	private ImageView imageView;
+    @ViewInject(R.id.photo)
+    private ImageView photo;
+    @ViewInject(R.id.linearLayout)
+    private LinearLayout linearLayout;
+    @ViewInject(R.id.scrollView)
+    private ScrollView scrollView;
+    @ViewInject(R.id.editView)
+    private EditText editView;
+    @ViewInject(R.id.xcRadio)
+    private RadioButton xcRadio;
+    @ViewInject(R.id.jcRadio)
+    private RadioButton jcRadio;
+    @ViewInject(R.id.line)
+    private TextView line;
+    @ViewInject(R.id.lineNumber)
+    private TextView lineNumber;
+    @ViewInject(R.id.driverName)
+    private TextView driverName;
+    @ViewInject(R.id.lineTime)
+    private TextView lineTime;
+    @ViewInject(R.id.location)
+    private TextView location;
+
+    private Uri imageUri;
+    private CustomDialog choosePicDialog;
+    private String lineStr, numberStr, driverNameStr, timeStr, telStr, cenpt1Addr;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
+        super.onCreate(savedInstanceState);
+//        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+//        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        getFromIntent();
+        initListener();
+
+        setTitle("故障详情");
+    }
+
+    private void initListener() {
+        // TODO Auto-generated method stub
+        save.setOnClickListener(this);
+        back.setOnClickListener(this);
+        driverTel.setOnClickListener(this);
+        takephoto.setOnClickListener(this);
+        photo.setOnClickListener(this);
+//		imageView.setOnClickListener(this);
+        editView.setOnClickListener(this);
+        jcRadio.setOnCheckedChangeListener(this);
+        xcRadio.setOnCheckedChangeListener(this);
+    }
+
+    public void getFromIntent() {
+        Intent intent = getIntent();
+
+        lineStr = intent.getStringExtra("lineStr");
+        numberStr = intent.getStringExtra("numberStr");
+        driverNameStr = intent.getStringExtra("driverNameStr");
+        timeStr = intent.getStringExtra("timeStr");
+        cenpt1Addr = intent.getStringExtra("cenpt1Addr");
+        telStr = intent.getStringExtra("telStr");
+
+        line.setText(lineStr);
+        lineNumber.setText(numberStr);
+        driverName.setText("驾驶员：" + driverNameStr);
+        lineTime.setText(timeStr);
+        location.setText(cenpt1Addr);
+    }
+
+
+    public void run() {
+        InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+//		inputManager.showSoftInput(editView, 0);
+        inputManager.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+    }
+
+    /**
+     * 更换头像
+     */
+    private void getPhoto() {
+        LinearLayout lyDlg;
+        Button btnTakePhoto, btnAlbum, btnCancel;
+
+        choosePicDialog = new CustomDialog(this, true);
+        choosePicDialog.setCustomView(R.layout.dlg_choose_pic);
+
+        Window window = choosePicDialog.getDialog().getWindow();
+        window.setGravity(Gravity.BOTTOM);
+        window.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
+        lyDlg = (LinearLayout) choosePicDialog.findViewById(R.id.dialog_layout);
+        lyDlg.setPadding(0, 0, 0, 0);
+
+        btnTakePhoto = (Button) choosePicDialog.findViewById(R.id.btnTakePhoto);
+        btnAlbum = (Button) choosePicDialog.findViewById(R.id.btnAlbum);
+        btnCancel = (Button) choosePicDialog.findViewById(R.id.btnCancel);
+
+        // 拍照
+        btnTakePhoto.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choosePicDialog.dismiss();
+                File outputImage = new File(Environment.getExternalStorageDirectory(), "tempImage.jpg");
+                try {
+                    if (outputImage.exists()) {
+                        outputImage.delete();
+                    }
+                    outputImage.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                imageUri = Uri.fromFile(outputImage);
+                Intent intent_pz = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // 下面这句指定调用相机拍照后的照片存储的路径
+                intent_pz.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent_pz, PIC_TAKEPHOTO);
+            }
+        });
+
+        // 相册
+        btnAlbum.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choosePicDialog.dismiss();
+                File outputImage = new File(Environment.getExternalStorageDirectory(), "tempImage.jpg");
+                try {
+                    if (outputImage.exists()) {
+                        outputImage.delete();
+                    }
+                    outputImage.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                imageUri = Uri.fromFile(outputImage);
+                Intent intent_xc = new Intent(Intent.ACTION_PICK, null);
+//				intent_xc.setType("image/*");
+//				intent_xc.putExtra("crop", true);
+//				intent_xc.putExtra("scale", true);
+                intent_xc.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                intent_xc.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent_xc, PIC_ALBUM);
+            }
+        });
+
+        // 取消
+        btnCancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choosePicDialog.dismiss();
+            }
+        });
+        choosePicDialog.setCancelable(true);
+        choosePicDialog.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        // TODO Auto-generated method stub
+        switch (v.getId()) {
+            case R.id.back:
+                finish();
+                break;
+            case R.id.save:
+                showConfirmTip("确定保存", new OnCustomDialogConfirmListener() {
+                    @Override
+                    public void onClick() {
+                        // TODO Auto-generated method stub
+                        finish();
+                    }
+                }, new OnCustomDialogConfirmListener() {
+                    @Override
+                    public void onClick() {
+                        // TODO Auto-generated method stub
+                    }
+                });
+                break;
+            case R.id.driverTel://打电话
+//			final String tel="122121212";
+                showConfirmTip("确定拨打电话", new OnCustomDialogConfirmListener() {
+                    @Override
+                    public void onClick() {
+                        // TODO Auto-generated method stub
+                        Intent intent1 = new Intent();
+                        intent1.setAction(Intent.ACTION_CALL);
+                        intent1.setData(Uri.parse("tel" + telStr));
+                        startActivity(intent1);
+                    }
+                }, new OnCustomDialogConfirmListener() {
+                    @Override
+                    public void onClick() {
+                        // TODO Auto-generated method stub
+
+                    }
+                });
+                break;
+            case R.id.takephoto://拍照
+                getPhoto();
+                break;
+            case R.id.photo://拍照
+
+                String path = "http://img5.duitang.com/uploads/item/201406/17/20140617140412_JKnZU.thumb.700_0.jpeg";
+//			String path="http://ww1.sinaimg.cn/orj480/736f0c7ejw1f659dt6n94j20bu06k754.jpg";
+                initPopupWindow(linearLayout, path);
+                break;
+//            case R.id.imageView://拍照
+//                String path1 = "http://img5.duitang.com/uploads/item/201406/17/20140617140412_JKnZU.thumb.700_0.jpeg";
+////			String path1="http://ww1.sinaimg.cn/orj480/736f0c7ejw1f659dt6n94j20bu06k754.jpg";
+//                initPopupWindow(linearLayout, path1);
+//                break;
+            case R.id.editView://输入框
+                editView.requestFocus();
+                editView.setFocusable(true);
+                editView.setFocusableInTouchMode(true);
+                run();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        // TODO Auto-generated method stub
+        if (isChecked) {
+            switch (buttonView.getId()) {
+                case R.id.xcRadio:
+                    editView.setHint("现场维修真实情况填写");
+                    break;
+                case R.id.jcRadio:
+                    editView.setHint("进场维修真实情况填写");
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+}

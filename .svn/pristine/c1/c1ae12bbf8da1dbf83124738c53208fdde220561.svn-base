@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <!-- 监控  路线查询 -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/blue_purple"
+        android:orientation="vertical" >
+
+        <!-- android:background="@drawable/title_top_bg" -->
+
+        <RelativeLayout
+            android:id="@+id/relativelayout1"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:background="@color/blue_purple" >
+
+            <ImageView
+                    android:id="@+id/back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="15dp"
+                    android:src="@mipmap/title_back1"
+                    android:textColor="@color/white" />
+            
+            <!--
+                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
+            -->
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/back"
+                android:layout_marginLeft="15dp"
+                android:text="已完成"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+            
+            <!-- android:text="2016-12-09" -->
+            <TextView
+                android:id="@+id/dateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:textStyle="bold" />
+
+            <!-- android:background="@drawable/transprent_bg" -->
+
+            <Button
+                android:id="@+id/set"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:background="@null"
+                android:text="查询"
+                android:textColor="@color/white"
+                android:textSize="13sp" />
+        </RelativeLayout>
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/finishRadio"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:background="@drawable/selector_shift_top_menu_bg"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:text="已修好"
+                android:textColor="@drawable/selector_top_menu_shift_textcolor" />
+
+            <RadioButton
+                android:id="@+id/jcRadio"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:background="@drawable/selector_shift_top_menu_bg2"
+                android:button="@null"
+                android:checked="false"
+                android:gravity="center"
+                android:text="进场维修"
+                android:textColor="@drawable/selector_top_menu_shift_textcolor" />
+
+            <RadioButton
+                android:id="@+id/cancelRadio"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:background="@drawable/selector_shift_top_menu_bg1"
+                android:button="@null"
+                android:checked="false"
+                android:gravity="center"
+                android:text="已取消"
+                android:textColor="@drawable/selector_top_menu_shift_textcolor" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <!--
+    <FrameLayout
+        android:id="@+id/layoutContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
+        android:padding="8dp" >
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/text_field"
+            android:drawableLeft="@drawable/search"
+            android:drawablePadding="8dp"
+            android:focusable="false"
+            android:hint="搜索"
+            android:paddingLeft="8dp"
+            android:paddingRight="40dp"
+            android:singleLine="true"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/ivClearText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:padding="4dp"
+            android:src="@drawable/clear_button"
+            android:visibility="invisible" />
+    </FrameLayout>
+    -->
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:paddingLeft="15dp"
+        android:scrollbars="none" >
+    </ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
+        android:orientation="horizontal"
+        android:paddingLeft="60dp"
+        android:paddingRight="60dp"
+        android:visibility="gone" >
+
+        <RadioButton
+            android:id="@+id/addButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawablePadding="5dp"
+            android:drawableTop="@mipmap/title_jia_select"
+            android:gravity="center"
+            android:text="新建机构"
+            android:textSize="13sp" />
+
+        <RadioButton
+            android:id="@+id/searchButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawablePadding="5dp"
+            android:drawableTop="@mipmap/title_jia_select"
+            android:gravity="center"
+            android:text="搜索"
+            android:textSize="13sp" />
+
+        <RadioButton
+            android:id="@+id/setButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawablePadding="5dp"
+            android:drawableTop="@mipmap/title_jia_select"
+            android:gravity="center"
+            android:text="菜单"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+</LinearLayout>
